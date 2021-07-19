@@ -10,9 +10,10 @@ const RoomSchema = mongoose.Schema(
     },
     members: [
       {
+        socket: String,
         name: String,
-        socketId: String,
-        position: [],
+        lat: String,
+        lon: String,
       },
     ],
   },
