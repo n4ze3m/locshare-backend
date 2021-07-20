@@ -39,6 +39,7 @@ exports.create_room = async (req, res) => {
     const room = Room({
       roomId,
       createdBy: name,
+      members: [],
     });
     await room.save();
     return res.send({ room });

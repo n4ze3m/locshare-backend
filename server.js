@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const { readdirSync } = require("fs");
 const { MONGO } = require("./config");
-const { joinRoom } = require("./utils/room");
+const { joinRoom, findFriends } = require("./utils/room");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -33,9 +33,12 @@ io.on("connection", (socket) => {
   socket.emit("connection", null);
   socket.on("join", ({ data }) => {
     const { name, roomId, lat, lon } = data;
+    console.log(data);
     joinRoom({ socket: socket.id, name, roomId, lat, lon })
-      .then((room) => {
+      .then(async (room) => {
         socket.join(room);
+        const friends = await findFriends(room);
+        io.to(room).emit("friends", friends);
       })
       .catch(console.log);
   });
