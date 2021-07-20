@@ -34,7 +34,7 @@ const io = socketio(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.emit("connection", null);
+  socket.emit("connection", socket.id);
   // join
   socket.on("join", async ({ data }) => {
     const { name, roomId, lat, lon } = data;
