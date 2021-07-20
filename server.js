@@ -5,7 +5,12 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const { readdirSync } = require("fs");
 const { MONGO } = require("./config");
-const { joinRoom, findFriends } = require("./utils/room");
+const {
+  joinRoom,
+  findFriends,
+  onLeave,
+  updatePosition,
+} = require("./utils/room");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -29,16 +34,39 @@ const io = socketio(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("user connected", socket.id);
   socket.emit("connection", null);
-  socket.on("join", ({ data }) => {
+  // join
+  socket.on("join", async ({ data }) => {
     const { name, roomId, lat, lon } = data;
+    const room = await joinRoom({ socket: socket.id, name, roomId, lat, lon });
+    socket.join(room);
+    const friends = await findFriends(room);
+    io.to(room).emit("friends", friends);
+  });
+
+  // update
+  socket.on("update", async ({ data }) => {
     console.log(data);
-    joinRoom({ socket: socket.id, name, roomId, lat, lon })
+    const { lat, lon } = data;
+    await updatePosition({ socket: socket.id, lat, lon })
       .then(async (room) => {
-        socket.join(room);
-        const friends = await findFriends(room);
-        io.to(room).emit("friends", friends);
+        if (room) {
+          const friends = await findFriends(room);
+          console.log("friends", friends);
+          io.to(room).emit("friends", friends);
+        }
+      })
+      .catch(console.log);
+  });
+
+  // disconnect
+  socket.on("disconnect", async () => {
+    onLeave(socket.id)
+      .then(async (room) => {
+        if (room) {
+          const friends = await findFriends(room);
+          io.to(room).emit("friends", friends);
+        }
       })
       .catch(console.log);
   });
