@@ -2,26 +2,36 @@ const Room = require("../models/Room");
 const Join = require("../models/Join");
 
 const joinRoom = async (data) => {
-  const { roomId, name, socket, lat, lon } = data;
-  if (name.trim() !== "") {
-    await Room.updateOne(
-      { roomId },
-      {
-        $push: {
-          members: { socket, name, lat, lon },
-        },
-      }
-    );
-    const join = Join({ socket, room: roomId });
-    await join.save();
-  }
+  try {
+    const { roomId, name, socket, lat, lon } = data;
+    if (name.trim() !== "") {
+      await Room.updateOne(
+        { roomId },
+        {
+          $push: {
+            members: { socket, name, lat, lon },
+          },
+        }
+      );
+      const join = Join({ socket, room: roomId });
+      await join.save();
+    }
 
-  return roomId;
+    return roomId;
+  } catch (error) {
+    console.log(error.message);
+    return null;
+  }
 };
 
 const findFriends = async (roomId) => {
-  const friends = await Room.findOne({ roomId });
-  return friends.members;
+  try {
+    const friends = await Room.findOne({ roomId });
+    return friends.members;
+  } catch (error) {
+    console.log(error.message);
+    return [];
+  }
 };
 
 const updatePosition = async (data) => {
