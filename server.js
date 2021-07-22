@@ -46,7 +46,6 @@ io.on("connection", (socket) => {
 
   // update
   socket.on("update", async ({ data }) => {
-    console.log(data);
     const { lat, lon } = data;
     await updatePosition({ socket: socket.id, lat, lon })
       .then(async (room) => {
