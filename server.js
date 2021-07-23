@@ -43,6 +43,12 @@ io.on("connection", (socket) => {
     const friends = await findFriends(room);
     io.to(room).emit("friends", friends);
   });
+  // chat room
+  socket.on("message", async ({ data }) => {
+    console.log(data);
+    const { room } = data;
+    io.in(room).emit("message", data);
+  });
 
   // update
   socket.on("update", async ({ data }) => {
