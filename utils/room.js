@@ -13,7 +13,7 @@ const joinRoom = async (data) => {
           },
         }
       );
-      const join = Join({ socket, room: roomId });
+      const join = Join({ socket, room: roomId, name });
       await join.save();
     }
 
@@ -64,7 +64,7 @@ const onLeave = async (socket) => {
     if (!join) {
       return null;
     }
-    const { room } = join;
+    const { room, name } = join;
     await Room.updateOne(
       { roomId: room },
       {
@@ -73,8 +73,8 @@ const onLeave = async (socket) => {
         },
       }
     );
-    // await join.remove();
-    return room;
+    await join.remove();
+    return { room, name };
   } catch (error) {
     console.log(error.message);
     return null;

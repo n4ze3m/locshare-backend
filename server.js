@@ -39,8 +39,15 @@ io.on("connection", (socket) => {
   socket.on("join", async ({ data }) => {
     const { name, roomId, lat, lon } = data;
     const room = await joinRoom({ socket: socket.id, name, roomId, lat, lon });
+
     socket.join(room);
+
+    socket.broadcast
+      .to(room)
+      .emit("notifications", `${name} has joined the room`);
+
     const friends = await findFriends(room);
+
     io.to(room).emit("friends", friends);
   });
   // chat room
@@ -68,8 +75,12 @@ io.on("connection", (socket) => {
     onLeave(socket.id)
       .then(async (room) => {
         if (room) {
-          const friends = await findFriends(room);
-          io.to(room).emit("friends", friends);
+          const friends = await findFriends(room.room);
+          io.to(room.room).emit(
+            "notifications",
+            `${room.name} has left the room`
+          );
+          io.to(room.room).emit("friends", friends);
         }
       })
       .catch(console.log);
