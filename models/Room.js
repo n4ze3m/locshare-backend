@@ -16,6 +16,7 @@ const RoomSchema = mongoose.Schema(
         lon: String,
       },
     ],
+    createdAt: { type: Date, default: Date.now, expires: "2d" },
   },
   {
     timestamp: true,
