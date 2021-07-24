@@ -45,9 +45,8 @@ io.on("connection", (socket) => {
   });
   // chat room
   socket.on("message", async ({ data }) => {
-    console.log(data);
     const { room } = data;
-    io.in(room).emit("message", data);
+    io.to(room).emit("message", data);
   });
 
   // update
