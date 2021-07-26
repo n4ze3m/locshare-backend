@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (_, res) => {
-  return res.send("Locshare backend running...");
+  return res.send("eee...");
 });
 
 readdirSync("./routes").map((file) =>
