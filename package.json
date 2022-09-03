@@ -8,8 +8,8 @@
     "dev": "nodemon server"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "n4ze3m",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
